@@ -14,6 +14,8 @@
 // Tipos
 // ---------------------------------------------------------------------------
 
+import { URL } from "url";
+
 /** Resultado de analizar una URL. */
 export interface UrlParts {
   /** Protocolo tal como lo devuelve la WHATWG URL, p. ej. "https:". */
@@ -59,10 +61,33 @@ export type Headers = Record<string, string>;
  *
  * Si la URL no es válida, `new URL()` lanza TypeError — no hace falta
  * que lo manejes aparte, se propagará solo.
+ * 
  */
+
+export interface UrlParts {
+  protocol: string;
+  host: string;
+  pathname: string;
+  search: string;
+  query: [string, string][];
+}
+
 export function parseUrl(url: string): UrlParts {
-  // TODO: tu implementación aquí
-  throw new Error("Not implemented");
+  
+  try {
+    const u = new URL(url);
+    const query: [string, string][] = Array.from(u.searchParams.entries());
+    return {
+      protocol: u.protocol,
+      host: u.host,
+      pathname: u.pathname,
+      search: u.search,
+      query: query,
+    };
+  } catch (error) {
+    throw new TypeError("URL Invalida");
+  }
+
 }
 
 /**
