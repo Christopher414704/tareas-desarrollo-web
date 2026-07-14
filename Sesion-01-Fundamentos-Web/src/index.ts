@@ -64,6 +64,8 @@ export type Headers = Record<string, string>;
  * 
  */
 
+
+//Definimos la estructura de como devolvera los datos.
 export interface UrlParts {
   protocol: string;
   host: string;
@@ -72,10 +74,20 @@ export interface UrlParts {
   query: [string, string][];
 }
 
+
+/**
+ * Analiza una URL y extrae sus componentes principales.
+ * @param urlString - La URL en formato de texto a analizar.
+ * @returns Un objeto con el protocolo, host, path, search y query params.
+ * @throws Error si la URL no es válida.
+ */
+
 export function parseUrl(url: string): UrlParts {
   
   try {
+    // Creamos un objeto URL a partir de la cadena proporcionada
     const u = new URL(url);
+    // Convertimos los parámetros de búsqueda en un array de pares [clave, valor]
     const query: [string, string][] = Array.from(u.searchParams.entries());
     return {
       protocol: u.protocol,
@@ -85,6 +97,7 @@ export function parseUrl(url: string): UrlParts {
       query: query,
     };
   } catch (error) {
+    // Si ocurre un error al crear el objeto URL, lanzamos un TypeError con un mensaje personalizado
     throw new TypeError("URL Invalida");
   }
 
