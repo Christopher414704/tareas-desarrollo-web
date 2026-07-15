@@ -116,13 +116,32 @@ export function parseUrl(url: string): UrlParts {
  *
  * Pista: un único `if / else if` con comparaciones de rangos basta.
  */
+
+/**
+ * Clasifica un código de estado HTTP en su categoría correspondiente.
+ * @param code - El código numérico de estado HTTP.
+ * @returns Un string con la clasificación del código.
+ */
 export function classifyStatus(code: number): StatusCategory {
-  // TODO: tu implementación aquí
-  throw new Error("Not implemented");
+  if (code >= 100 && code < 200) {
+    return "1xx Informativo";
+  } else if (code >= 200 && code < 300) {
+    return "2xx Éxito";
+  }
+  else if (code >= 300 && code < 400) {
+    return "3xx Redirección";
+  }
+  else if (code >= 400 && code < 500) {
+    return "4xx Error del cliente";
+  }
+  else if (code >= 500 && code < 600) {
+    return "5xx Error del servidor";
+  }
+  return "Desconocido";
 }
 
 /**
- * TODO: Parsea un texto con líneas de cabeceras HTTP al formato
+ * TODO: Parsea un texto con líneas de cabecerasgit HTTP al formato
  * `Record<string, string>`. El separador entre nombre y valor es ":".
  *
  * Reglas:
