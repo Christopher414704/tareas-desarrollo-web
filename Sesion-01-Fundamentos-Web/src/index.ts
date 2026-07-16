@@ -156,9 +156,35 @@ export function classifyStatus(code: number): StatusCategory {
  * Pista: `text.split("\n")` te da las líneas; `String.split(":")` te separa
  * nombre y valor. Recuerda `.trim()` para quitar espacios sobrantes.
  */
+
+//Interfaz para definir la estructura de las cabeceras HTTP como un objeto con claves y valores de tipo string.
+export interface RecordHeaders {
+  [key: string]: string;
+}
+
+/**
+ * Parsea un texto con líneas "Nombre: valor" a un objeto indexado.
+ * @param text - El bloque de texto que contiene las cabeceras.
+ */
 export function parseHeaders(text: string): Headers {
-  // TODO: tu implementación aquí
-  throw new Error("Not implemented");
+  const headers: RecordHeaders = {};
+  const lines = text.split("\n");
+
+  // Iteramos sobre cada línea del texto
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+    // Si la línea está vacía o no contiene ":", la ignoramos
+    if (!trimmedLine || !trimmedLine.includes(":")) continue;
+
+    const index = trimmedLine.indexOf(":");
+    const key = trimmedLine.substring(0, index).trim();
+    const value = trimmedLine.substring(index + 1).trim();
+
+    if(key) {
+      headers[key] = value;
+    }
+  }
+  return headers;
 }
 
 /**
@@ -175,13 +201,18 @@ export function parseHeaders(text: string): Headers {
  *     • Content-Type: application/json
  *     • Authorization: Bearer abc
  */
+
+/**
+ * Combina el análisis de URL, estado y cabeceras en un resumen legible.
+ */
 export function summarizeRequest(
   url: string,
   status: number,
   headersText: string,
 ): string {
-  // TODO: tu implementación aquí
-  throw new Error("Not implemented");
+  const urlParts = parseUrl(url);
+  const statusCategory = classifyStatus(status);
+  return `Solicitud a ${urlParts.host}${urlParts.pathname} respondió con estado ${status} (${statusCategory})`;
 }
 
 // ---------------------------------------------------------------------------
