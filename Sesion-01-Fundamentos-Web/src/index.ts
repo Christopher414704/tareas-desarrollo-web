@@ -123,6 +123,8 @@ export function parseUrl(url: string): UrlParts {
  * @returns Un string con la clasificación del código.
  */
 export function classifyStatus(code: number): StatusCategory {
+
+  //definimos la estructura de control para clasificar el código de estado HTTP en su categoría correspondiente.
   if (code >= 100 && code < 200) {
     return "1xx Informativo";
   } else if (code >= 200 && code < 300) {
@@ -176,6 +178,7 @@ export function parseHeaders(text: string): Headers {
     // Si la línea está vacía o no contiene ":", la ignoramos
     if (!trimmedLine || !trimmedLine.includes(":")) continue;
 
+    // Encontramos el índice del primer ":" para separar nombre y valor
     const index = trimmedLine.indexOf(":");
     const key = trimmedLine.substring(0, index).trim();
     const value = trimmedLine.substring(index + 1).trim();
