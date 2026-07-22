@@ -57,6 +57,80 @@
       </p>
 
     </section>
+
+    <section>
+      <h2>Comparte tu Opinion</h2>
+
+      <form action="#" method="post">
+        <p>
+          <label for="nombre">Nombre:</label>
+          <input 
+          id="nombre"
+          name="nombre"
+          type="text"
+          required
+          minlength="3"
+          maxlength="50"
+          >
+        </p>
+
+        <p>
+          <label for="equipo">Equipo Favorito:</label>
+          <input 
+          id="equipo"
+          name="equipo"
+          type="text"
+          required
+          minlength="2"
+          >
+        </p>
+
+        <p>
+          <label for="mensaje">Comentario:</label>
+          <textarea 
+          id="mensaje"
+          name="mensaje"
+          rows="4"
+          required
+          minlength="10"
+          maxlength="300"
+          ></textarea>
+        </p>
+
+        <button type="submit">Enviar Opinion</button>
+      </form>
+
+    </section>
+
+    <button type="button" command="show-modal" commandfor="bienvenida">Abrir mensaje de bienvenida</button>
+
+    <dialog id="bienvenida">
+      <h3>Bienvenido al portal de futbol</h3>
+
+      <p>
+        En este sitio encontraras informacion sobre la historia del futbol, jugadores, torneos y estadios reconocidos.
+      </p>
+
+      <form method="dialog">
+        <button type="submit">Cerrar</button>
+      </form>
+    </dialog>
+
+    <section>
+      <h2>Ayuda del sitio</h2>
+
+      <button type="button" popovertarget="ayuda-sitio">
+          Mostrar ayuda
+      </button>
+
+      <div id="ayuda-sitio" popover>
+        <h3>¿Como navegar por el portal?</h3>
+
+        <p>
+          Utiliza el menú principal para visitar las páginas de historia, jugadores, torneos, estadios y contacto.
+        </p>
+      </div>
+    </section>
     
     <aside>
 
