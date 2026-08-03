@@ -1,20 +1,43 @@
-/* TODO: Reset y estilos base */
+.container {
+    display: grid;
+    gap: 16px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
 
-/* TODO: Galería de productos */
-/* Desktop (>=1024px): 3 columnas usando CSS Grid */
-/* Mobile (<768px): 1 columna con scroll vertical */
+.container img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    display: block;
+}
 
-/* TODO: Estilo de cada tarjeta de producto */
-/* - Imagen ocupa el ancho completo de la tarjeta */
-/* - Nombre del producto en negrita */
-/* - Precio destacado */
-/* - Botón "Comprar" estilizado con hover effect */
+.producto-info{
+    display: flex;
+    flex-direction: column;
+}
 
-/* TODO: To-Do List */
-/* - Lista sin marcadores (list-style: none) */
-/* - Checkbox con label accesible */
-/* - Tareas alternadas con color de fondo (zebra striping) */
+@media (min-width: 768px) {
+    .container {
+        grid-template-columns: 1fr
+    }
+}
 
-/* TODO: Diseño responsivo */
-/* - Usar @media queries para cambiar entre mobile y desktop */
-/* - La galería debe ser responsiva usando Grid + media queries */
+@media (min-width: 1024px) {
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        max-height: none;
+        overflow-y: visible;
+    }
+
+    .todo-list{
+        display: flex;
+        flex-direction: column;
+        grid-column: 3;
+        grid-row: 1;
+        gap: 12px;
+    }
+
+
+}
