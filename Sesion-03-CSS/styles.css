@@ -1,3 +1,12 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0; 
+  padding: 0; 
+}
+
+
 .container {
     display: grid;
     gap: 16px;
@@ -17,9 +26,16 @@
     flex-direction: column;
 }
 
+.producto{
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;            
+    background-color: #ffffff;
+}
+
 @media (min-width: 768px) {
     .container {
-        grid-template-columns: 1fr
+        grid-template-columns: 1fr;
     }
 }
 
@@ -39,5 +55,14 @@
         gap: 12px;
     }
 
+    .btn-comprar{
+        background-color: bisque;
+    }
 
+    .btn-comprar:hover{
+        background-color: brown;
+        transform: translateY(-2px); 
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+   
 }
