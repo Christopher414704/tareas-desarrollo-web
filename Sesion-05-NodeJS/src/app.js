@@ -1,8 +1,10 @@
 import http from 'node:http';
 import { EventEmitter } from 'node:events';
-import os from 'node:os';
+import os, { arch, type } from 'node:os';
 import path from 'node:path';
 import fs from 'node:fs/promises';
+import { dir } from 'node:console';
+import { json } from 'node:stream/consumers';
 
 
 
@@ -115,7 +117,21 @@ export function infoSistema() {
  * @returns {{ registrar: (mensaje: string) => void, onRegistro: (fn: (linea: string) => void) => void }}
  */
 export function crearLogger() {
-    throw new Error('Not implemented: crearLogger');
+    const emisor = new EventEmitter();
+
+    function registrar(mensaje){
+        const linea = `[${new Date().toISOString()}] ${mensaje}`;
+        emisor.emit('registro', linea);
+    }
+
+    function onRegistro(fn){
+        emisor.on('registro', fn)
+    }
+
+    return{
+        registrar,
+        onRegistro
+    }
 }
 
 /**
@@ -126,7 +142,18 @@ export function crearLogger() {
  * @returns {Promise<Array<{id: string, texto: string, fecha: string}>>}
  */
 export async function leerMensajes(archivoDatos) {
-    throw new Error('Not implemented: leerMensajes');
+    try{
+        const contenido = await fs.readFile(archivoDatos, 'utf-8');
+        const mensajes = JSON.parse(contenido);
+
+        if(!Array.isArray(mensajes)){
+            return [];
+        }
+
+        return mensajes;
+    } catch{
+        return [];
+    }
 }
 
 /**
@@ -139,7 +166,31 @@ export async function leerMensajes(archivoDatos) {
  * @returns {Promise<{id: string, texto: string, fecha: string} | null>}
  */
 export async function agregarMensaje(archivoDatos, texto) {
-    throw new Error('Not implemented: agregarMensaje');
+    if (typeof texto !== 'string' || !texto.trim()) {
+        return null;
+    }
+
+    const mensajes = await leerMensajes(archivoDatos);
+
+    const nuevoMensaje = {
+        id: generarId(),
+        texto: texto.trim(),
+        fecha: new Date().toISOString()
+    };
+
+    mensajes.push(nuevoMensaje);
+
+    const directorio = path.dirname(archivoDatos);
+
+    await fs.mkdir(directorio, { recursive: true });
+
+    await fs.writeFile(
+        archivoDatos,
+        JSON.stringify(mensajes, null, 2),
+        'utf-8'
+    );
+
+    return nuevoMensaje;
 }
 
 /**
