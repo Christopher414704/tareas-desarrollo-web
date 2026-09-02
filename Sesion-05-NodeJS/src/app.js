@@ -205,7 +205,102 @@ export async function agregarMensaje(archivoDatos, texto) {
  * @returns {import('node:http').Server}
  */
 export function crearServidor(config = {}) {
-    throw new Error('Not implemented: crearServidor');
+   const archivoDatos = config.archivoDatos || 'data/mensajes.json';
+    const nombreApp = config.nombreApp || 'mensajes-api';
+    const logger = config.logger || crearLogger();
+
+    return http.createServer(async (req, res) => {
+        const url = new URL(req.url || '/', 'http://localhost');
+        const ruta = url.pathname;
+        const metodo = req.method || 'GET';
+
+        logger.registrar(`${metodo} ${ruta}`);
+
+        res.setHeader('Content-Type', 'application/json; charset=utf-8');
+
+        try {
+            if (metodo === 'GET' && ruta === '/') {
+                res.statusCode = 200;
+
+                res.end(
+                    JSON.stringify({
+                        mensaje: `Bienvenido a ${nombreApp}`,
+                        hora: new Date().toISOString(),
+                        sistema: infoSistema()
+                    })
+                );
+
+                return;
+            }
+
+            if (metodo === 'GET' && ruta === '/mensajes') {
+                const mensajes = await leerMensajes(archivoDatos);
+
+                res.statusCode = 200;
+                res.end(JSON.stringify(mensajes));
+
+                return;
+            }
+
+            if (metodo === 'POST' && ruta === '/mensajes') {
+                const body = await leerBody(req);
+
+                let datos;
+
+                try {
+                    datos = JSON.parse(body);
+                } catch {
+                    res.statusCode = 400;
+
+                    res.end(
+                        JSON.stringify({
+                            error: 'JSON inválido'
+                        })
+                    );
+
+                    return;
+                }
+
+                const nuevoMensaje = await agregarMensaje(
+                    archivoDatos,
+                    datos.texto
+                );
+
+                if (!nuevoMensaje) {
+                    res.statusCode = 400;
+
+                    res.end(
+                        JSON.stringify({
+                            error: 'El texto es obligatorio'
+                        })
+                    );
+
+                    return;
+                }
+
+                res.statusCode = 201;
+                res.end(JSON.stringify(nuevoMensaje));
+
+                return;
+            }
+
+            res.statusCode = 404;
+
+            res.end(
+                JSON.stringify({
+                    error: 'Ruta no encontrada'
+                })
+            );
+        } catch {
+            res.statusCode = 500;
+
+            res.end(
+                JSON.stringify({
+                    error: 'Error interno del servidor'
+                })
+            );
+        }
+    });
 }
 
 /**
