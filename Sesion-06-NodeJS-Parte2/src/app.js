@@ -1,18 +1,3 @@
-/**
- * Procesador de logs y sistema de inventario — Tarea Sesión 6
- * Universidad Mariano Gálvez de Guatemala · Desarrollo Web
- *
- * Implementa las funciones marcadas con TODO para que los tests pasen.
- * No cambies los nombres exportados ni su firma.
- *
- * Temas de la sesión aplicados aquí:
- *   - ES Modules avanzado (named/default exports, re-exports)  → ./src/index.js
- *   - __dirname/__filename con import.meta.url                 → este archivo
- *   - Streams y pipelines (Transform para filtrar)             → filtrarLogs
- *   - Testing con node:test (unitario + integración)           → tests/
- *   - better-sqlite3 (CRUD, transacciones)                     → ./src/db.js
- */
-
 import { createReadStream, createWriteStream } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
