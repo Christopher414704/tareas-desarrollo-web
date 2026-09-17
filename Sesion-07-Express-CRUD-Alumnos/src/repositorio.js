@@ -1,15 +1,4 @@
 /**
- * repositorio.js — Repositorio en memoria de Alumnos
- * Tarea Sesión 7 · Desarrollo Web · UMG
- *
- * Responsabilidad: guardar y recuperar alumnos. NO conoce Express ni HTTP.
- * Esto es el patrón Repository que ya viste en clase: la capa de datos
- * queda aislada de la capa web.
- *
- * TODO: implementa los 5 métodos marcados. No cambies sus nombres ni firmas.
- */
-
-/**
  * Datos iniciales para que la API arranque con información.
  * @typedef {{ id: string, nombre: string, apellido: string, email: string, edad: number }} Alumno
  * @type {Alumno[]}

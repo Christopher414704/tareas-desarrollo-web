@@ -1,12 +1,3 @@
-/**
- * app.js — Servidor Express (API REST + sitio estático)
- * Tarea Sesión 7 · Desarrollo Web · UMG
- *
- * TODO: implementa los middlewares y las rutas marcadas.
- * Los tests de `tests/api.test.js` describen exactamente el contrato
- * que debe cumplir cada endpoint (son tu guía).
- */
-
 import express from 'express';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
