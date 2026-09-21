@@ -1,21 +1,18 @@
 /**
- * app.js — Lógica del sitio (Fetch + Dialogs)
- * Tarea Sesión 7 · Desarrollo Web · UMG
- *
- * TODO: implementa las funciones marcadas. La API exige el header
- * `x-api-key` en las operaciones de escritura (POST, PUT, DELETE).
+ * app.js — CRUD de Alumnos
+ * Sesión 07 · Desarrollo Web
  */
 
 const API = '/alumnos';
-const API_KEY = 'umg-2026'; // debe coincidir con config.env
+const API_KEY = 'umg-2026';
 
-// Helper ya resuelto: cabeceras para las peticiones
+// Cabeceras para las peticiones
 const cabeceras = (conJson = true) => ({
     ...(conJson ? { 'Content-Type': 'application/json' } : {}),
-    'x-api-key': API_KEY,
+    'x-api-key': API_KEY
 });
 
-// Referencias del DOM (ya resueltas)
+// Elementos del HTML
 const tabla = document.querySelector('#tablaAlumnos tbody');
 const mensaje = document.querySelector('#mensaje');
 const dialogoForm = document.querySelector('#dialogoForm');
@@ -24,68 +21,270 @@ const form = document.querySelector('#formAlumno');
 const tituloForm = document.querySelector('#tituloForm');
 const nombreEliminar = document.querySelector('#nombreEliminar');
 
-let idEnEdicion = null;        // null = crear | string = editar
+let idEnEdicion = null;
 let idAEliminar = null;
+let alumnosActuales = [];
 
-/**
- * TODO: GET /alumnos y pinta las filas en la tabla.
- * Cada fila debe incluir botones "Editar" y "Eliminar".
- */
-async function cargarAlumnos() {
-    throw new Error('TODO: implementar cargarAlumnos()');
-}
+// =====================================
+// MOSTRAR MENSAJES
+// =====================================
 
-/**
- * TODO: limpia el formulario, pone el título "Nuevo alumno",
- * idEnEdicion = null y abre dialogoForm con showModal().
- */
-function abrirDialogoNuevo() {
-    throw new Error('TODO: implementar abrirDialogoNuevo()');
-}
-
-/**
- * TODO: precarga los datos del alumno en el formulario,
- * guarda su id en idEnEdicion, cambia el título a "Editar alumno"
- * y abre dialogoForm.
- */
-function abrirDialogoEditar(id) {
-    throw new Error('TODO: implementar abrirDialogoEditar()');
-}
-
-/**
- * TODO: lee los campos del formulario y llama a la API.
- *   - Si idEnEdicion es null → POST /alumnos            (201)
- *   - Si hay id             → PUT /alumnos/:id          (200)
- * Usa cabeceras() y JSON.stringify(). Al terminar: cierra el dialog,
- * recarga la lista y muestra un mensaje.
- */
-async function guardarAlumno(event) {
-    throw new Error('TODO: implementar guardarAlumno()');
-}
-
-/**
- * TODO: abre dialogoEliminar guardando el id, y al confirmar hace
- * DELETE /alumnos/:id con cabeceras(false). Luego recarga y avisa.
- */
-function eliminarAlumno(id) {
-    throw new Error('TODO: implementar eliminarAlumno()');
-}
-
-/**
- * TODO: helper para mostrar mensajes (error en rojo, éxito en verde).
- */
 function mostrarMensaje(texto, tipo = 'ok') {
-    throw new Error('TODO: implementar mostrarMensaje()');
+    mensaje.textContent = texto;
+    mensaje.className = tipo;
 }
 
-// ============================================================
-// Conexión de eventos (TODO: completa lo que falte)
-// ============================================================
+// =====================================
+// CARGAR ALUMNOS
+// =====================================
+
+async function cargarAlumnos() {
+    try {
+        const respuesta = await fetch(API);
+
+        if (!respuesta.ok) {
+            throw new Error('No se pudieron cargar los alumnos');
+        }
+
+        const alumnos = await respuesta.json();
+
+        if (!Array.isArray(alumnos)) {
+            throw new Error('La respuesta de la API no es válida');
+        }
+
+        alumnosActuales = alumnos;
+        tabla.innerHTML = '';
+
+        for (const [indice, alumno] of alumnos.entries()) {
+            const fila = document.createElement('tr');
+
+            const valores = [
+                indice + 1,
+                alumno.nombre,
+                alumno.apellido,
+                alumno.email,
+                alumno.edad ?? ''
+            ];
+
+            for (const valor of valores) {
+                const celda = document.createElement('td');
+                celda.textContent = valor;
+                fila.appendChild(celda);
+            }
+
+            const acciones = document.createElement('td');
+
+            const btnEditar = document.createElement('button');
+            btnEditar.type = 'button';
+            btnEditar.textContent = 'Editar';
+            btnEditar.className = 'btn-editar';
+
+            btnEditar.addEventListener('click', () => {
+                abrirDialogoEditar(alumno.id);
+            });
+
+            const btnEliminar = document.createElement('button');
+            btnEliminar.type = 'button';
+            btnEliminar.textContent = 'Eliminar';
+            btnEliminar.className = 'btn-eliminar';
+
+            btnEliminar.addEventListener('click', () => {
+                eliminarAlumno(alumno.id);
+            });
+
+            acciones.append(btnEditar, btnEliminar);
+            fila.appendChild(acciones);
+
+            tabla.appendChild(fila);
+        }
+
+    } catch (error) {
+        mostrarMensaje(error.message, 'error');
+        throw error;
+    }
+}
+
+// =====================================
+// NUEVO ALUMNO
+// =====================================
+
+function abrirDialogoNuevo() {
+    form.reset();
+
+    idEnEdicion = null;
+
+    tituloForm.textContent = 'Nuevo alumno';
+
+    dialogoForm.showModal();
+}
+
+// =====================================
+// EDITAR ALUMNO
+// =====================================
+
+async function abrirDialogoEditar(id) {
+    try {
+        const respuesta = await fetch(`${API}/${id}`);
+
+        if (!respuesta.ok) {
+            throw new Error('No se pudo obtener el alumno');
+        }
+
+        const alumno = await respuesta.json();
+
+        form.reset();
+
+        document.querySelector('#nombre').value = alumno.nombre;
+        document.querySelector('#apellido').value = alumno.apellido;
+        document.querySelector('#email').value = alumno.email;
+        document.querySelector('#edad').value = alumno.edad ?? '';
+
+        idEnEdicion = id;
+
+        tituloForm.textContent = 'Editar alumno';
+
+        dialogoForm.showModal();
+
+    } catch (error) {
+        mostrarMensaje(error.message, 'error');
+    }
+}
+
+// =====================================
+// GUARDAR ALUMNO
+// =====================================
+
+async function guardarAlumno(event) {
+    event.preventDefault();
+
+    const nombre = document.querySelector('#nombre').value.trim();
+    const apellido = document.querySelector('#apellido').value.trim();
+    const email = document.querySelector('#email').value.trim();
+    const edad = document.querySelector('#edad').value.trim();
+
+    const datos = {
+        nombre,
+        apellido,
+        email
+    };
+
+    if (edad !== '') {
+        datos.edad = Number(edad);
+    }
+
+    const editando = idEnEdicion !== null;
+
+    const url = editando
+        ? `${API}/${idEnEdicion}`
+        : API;
+
+    const metodo = editando ? 'PUT' : 'POST';
+
+    try {
+        const respuesta = await fetch(url, {
+            method: metodo,
+            headers: cabeceras(),
+            body: JSON.stringify(datos)
+        });
+
+        if (!respuesta.ok) {
+            const error = await respuesta.json().catch(() => ({}));
+
+            throw new Error(
+                error.error || 'No se pudo guardar el alumno'
+            );
+        }
+
+        dialogoForm.close();
+
+        idEnEdicion = null;
+
+        await cargarAlumnos();
+
+        mostrarMensaje('Alumno guardado correctamente', 'ok');
+
+    } catch (error) {
+        mostrarMensaje(error.message, 'error');
+    }
+}
+
+// =====================================
+// ELIMINAR ALUMNO
+// =====================================
+
+function eliminarAlumno(id) {
+    idAEliminar = id;
+
+    const alumno = alumnosActuales.find(
+        (alumno) => alumno.id === id
+    );
+
+    nombreEliminar.textContent = alumno
+        ? `${alumno.nombre} ${alumno.apellido}`
+        : 'este alumno';
+
+    dialogoEliminar.showModal();
+}
+
+// =====================================
+// EVENTOS DEL SITIO
+// =====================================
+
 document.addEventListener('DOMContentLoaded', () => {
-    // TODO: botón "Nuevo alumno" → abrirDialogoNuevo()
-    // TODO: form submit → guardarAlumno(event)
-    // TODO: botón cancelar → dialogoForm.close()
-    // TODO: botón cancelar eliminar → dialogoEliminar.close()
-    // TODO: botón confirmar eliminar → ejecutar el DELETE
-    // TODO: llamar cargarAlumnos() al iniciar
+
+    // Abrir formulario de nuevo alumno
+    document.querySelector('#btnNuevo').addEventListener('click', () => {
+        abrirDialogoNuevo();
+    });
+
+    // Guardar alumno
+    form.addEventListener('submit', guardarAlumno);
+
+    // Cancelar formulario
+    document.querySelector('#btnCancelar').addEventListener('click', () => {
+        dialogoForm.close();
+    });
+
+    // Cancelar eliminación
+    document.querySelector('#btnCancelarEliminar').addEventListener('click', () => {
+        idAEliminar = null;
+        dialogoEliminar.close();
+    });
+
+    // Confirmar eliminación
+    document.querySelector('#btnConfirmarEliminar').addEventListener('click', async () => {
+
+        if (idAEliminar === null) {
+            return;
+        }
+
+        try {
+            const respuesta = await fetch(`${API}/${idAEliminar}`, {
+                method: 'DELETE',
+                headers: cabeceras(false)
+            });
+
+            if (!respuesta.ok) {
+                const error = await respuesta.json().catch(() => ({}));
+
+                throw new Error(
+                    error.error || 'No se pudo eliminar el alumno'
+                );
+            }
+
+            dialogoEliminar.close();
+
+            idAEliminar = null;
+
+            await cargarAlumnos();
+
+            mostrarMensaje('Alumno eliminado correctamente', 'ok');
+
+        } catch (error) {
+            mostrarMensaje(error.message, 'error');
+        }
+    });
+
+    // Cargar alumnos al iniciar
+    cargarAlumnos().catch(() => {});
 });
